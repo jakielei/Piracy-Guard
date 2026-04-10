@@ -38,8 +38,10 @@ export default function TaskPage() {
   const [logs, setLogs] = useState([]);
   const [operatorName, setOperatorName] = useState('');
   const [piratedCount, setPiratedCount] = useState(0);
+  const [fastMode, setFastMode] = useState(false);
   const [taskStarted, setTaskStarted] = useState(false);
   const [loginPrompt, setLoginPrompt] = useState('');
+  const [rematchStatus, setRematchStatus] = useState(null);
   const logRef = useRef(null);
   const eventSourceRef = useRef(null);
   const mainScrollRef = useRef(null);
@@ -50,6 +52,9 @@ export default function TaskPage() {
       const data = await res.json();
       setTask(data.task);
       setDramas(data.dramas);
+      if (data.piratedCount !== undefined) {
+        setPiratedCount(data.piratedCount);
+      }
     } catch (err) {
       console.error('Failed to fetch task:', err);
     }
@@ -108,7 +113,11 @@ export default function TaskPage() {
 
   async function handleStart() {
     try {
-      await fetch(`/api/tasks/${taskId}/start`, { method: 'POST' });
+      await fetch(`/api/tasks/${taskId}/start`, { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fastMode })
+      });
       setTaskStarted(true);
       setLogs([]);
       setLoginPrompt('');
@@ -150,6 +159,63 @@ export default function TaskPage() {
     } catch (err) {
       console.error('Failed to cancel:', err);
     }
+  }
+
+  async function handleRematchAll() {
+    if (!confirm('确定对当前任务内全部结果重新执行判定？(可能耗时数分钟)')) return;
+    try {
+      const res = await fetch('/api/rematch', { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ taskId })
+      });
+      const data = await res.json();
+      if (!data.success) {
+        alert(data.error || '触发失败');
+      } else {
+        alert('后台当前任务重新判定已启动！不要关闭页面。');
+        checkRematchProgress();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async function handleDeleteTask() {
+    if (!confirm('确定要彻底删除该任务的所有数据及其搜罗到的所有结果吗？此操作不可逆！')) return;
+    try {
+      const res = await fetch(`/api/tasks/${taskId}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (data.success) {
+        alert('任务及相关数据极速删除成功！');
+        window.location.href = '/';
+      } else {
+        alert('删除失败: ' + data.error);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('网络异常导致删除失败');
+    }
+  }
+
+  function checkRematchProgress() {
+    const timer = setInterval(async () => {
+      try {
+        const res = await fetch('/api/rematch');
+        const data = await res.json();
+        if (data.isRematching) {
+          setRematchStatus(`重判中... ${data.progress.processed}/${data.progress.total}`);
+        } else {
+          setRematchStatus(null);
+          clearInterval(timer);
+          alert('后台全盘重新判定已全部结束！');
+          if (selectedDrama) handleSelectDrama(selectedDrama);
+        }
+      } catch (err) {
+        clearInterval(timer);
+        setRematchStatus(null);
+      }
+    }, 3000);
   }
 
   async function handleSelectDrama(drama) {
@@ -237,10 +303,24 @@ export default function TaskPage() {
 
         {/* Control buttons */}
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-          {canStart && (
-            <button className="btn btn-primary btn-lg" onClick={handleStart}>
-              🚀 启动任务
+          <button className={`btn ${rematchStatus ? 'btn-secondary' : 'btn-warning'} btn-lg`} onClick={handleRematchAll} disabled={!!rematchStatus}>
+            {rematchStatus || '🔮 重新判定本任务'}
+          </button>
+          {!isRunning && task?.status !== 'pending' && (
+            <button className="btn btn-danger btn-lg" onClick={handleDeleteTask}>
+              🗑️ 删除任务及数据
             </button>
+          )}
+          {canStart && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(0,0,0,0.1)', padding: '4px 12px', borderRadius: 8 }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: 13, userSelect: 'none', color: 'var(--warning)' }}>
+                <input type="checkbox" checked={fastMode} onChange={e => setFastMode(e.target.checked)} style={{transform: 'scale(1.2)'}} />
+                ⚡ 极速模式 (仅查 Dailymotion)
+              </label>
+              <button className="btn btn-primary btn-lg" onClick={handleStart}>
+                🚀 启动任务
+              </button>
+            </div>
           )}
           {isRunning && (
             <>
@@ -400,8 +480,20 @@ export default function TaskPage() {
                   ) : (
                     searchResults.map(result => (
                       <div key={result.id} className={`result-card ${result.is_pirated === 1 ? 'marked-pirated' : ''}`}>
-                        <div className="result-title">{result.title}</div>
+                        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4}}>
+                           <div className="result-title" style={{maxWidth: '85%'}}>{result.title}</div>
+                           {result.match_status && result.match_status !== 'unknown' && (
+                             <span className={`badge ${result.match_status === 'piracy' ? 'badge-error' : result.match_status === 'safe' ? 'badge-success' : 'badge-warning'}`} style={{fontSize: 12, padding: '2px 8px', whiteSpace: 'nowrap'}}>
+                               {result.match_status.toUpperCase()}
+                             </span>
+                           )}
+                        </div>
                         <div className="result-url">{result.url}</div>
+                        {result.match_reason && (
+                          <div style={{fontSize: 13, color: result.match_status === 'piracy' ? 'var(--danger)' : 'var(--warning)', margin: '4px 0 8px 0', background: 'rgba(255,193,7,0.1)', padding: '4px 8px', borderRadius: 4}}>
+                            <i>🤖 算法定论: {result.match_reason}</i>
+                          </div>
+                        )}
                         {result.snippet && (
                           <div className="result-snippet">{result.snippet}</div>
                         )}
