@@ -484,10 +484,10 @@ export default function TaskPage() {
               </ul>
             </div>
 
-            <div className="review-main" ref={mainScrollRef}>
+            <div className="review-main">
               {selectedDrama ? (
                 <>
-                  <div style={{ marginBottom: 16 }}>
+                  <div className="review-main-header">
                     <h3 style={{ fontSize: 18, fontWeight: 600 }}>
                       {selectedDrama.name || selectedDrama.input_name}
                     </h3>
@@ -496,38 +496,39 @@ export default function TaskPage() {
                       {selectedDrama.content_type || '类型未知'} ·
                       共 {searchResults.length} 条搜索结果
                     </p>
+
+                    {/* Filter Tabs */}
+                    {searchResults.length > 0 && (
+                      <div className="filter-tabs" style={{ marginTop: 12 }}>
+                        <button
+                          className={`filter-tab ${resultFilter === 'all' ? 'active' : ''}`}
+                          onClick={() => setResultFilter('all')}
+                        >
+                          全部 <span className="filter-count">{searchResults.length}</span>
+                        </button>
+                        <button
+                          className={`filter-tab ${resultFilter === 'dailymotion' ? 'active' : ''}`}
+                          onClick={() => setResultFilter('dailymotion')}
+                        >
+                          🎬 Dailymotion <span className="filter-count">{dailymotionCount}</span>
+                        </button>
+                        <button
+                          className={`filter-tab ${resultFilter === 'social' ? 'active' : ''}`}
+                          onClick={() => setResultFilter('social')}
+                        >
+                          📱 四大社媒 <span className="filter-count">{socialCount}</span>
+                        </button>
+                        <button
+                          className={`filter-tab ${resultFilter === 'other' ? 'active' : ''}`}
+                          onClick={() => setResultFilter('other')}
+                        >
+                          🌐 其他 <span className="filter-count">{otherCount}</span>
+                        </button>
+                      </div>
+                    )}
                   </div>
 
-                  {/* Filter Tabs */}
-                  {searchResults.length > 0 && (
-                    <div className="filter-tabs" style={{ marginBottom: 16 }}>
-                      <button
-                        className={`filter-tab ${resultFilter === 'all' ? 'active' : ''}`}
-                        onClick={() => setResultFilter('all')}
-                      >
-                        全部 <span className="filter-count">{searchResults.length}</span>
-                      </button>
-                      <button
-                        className={`filter-tab ${resultFilter === 'dailymotion' ? 'active' : ''}`}
-                        onClick={() => setResultFilter('dailymotion')}
-                      >
-                        🎬 Dailymotion <span className="filter-count">{dailymotionCount}</span>
-                      </button>
-                      <button
-                        className={`filter-tab ${resultFilter === 'social' ? 'active' : ''}`}
-                        onClick={() => setResultFilter('social')}
-                      >
-                        📱 四大社媒 <span className="filter-count">{socialCount}</span>
-                      </button>
-                      <button
-                        className={`filter-tab ${resultFilter === 'other' ? 'active' : ''}`}
-                        onClick={() => setResultFilter('other')}
-                      >
-                        🌐 其他 <span className="filter-count">{otherCount}</span>
-                      </button>
-                    </div>
-                  )}
-
+                  <div className="review-main-scroll" ref={mainScrollRef}>
                   {filteredResults.length === 0 ? (
                     <div className="empty-state">
                       <div className="empty-icon">🔍</div>
@@ -585,6 +586,7 @@ export default function TaskPage() {
                       </div>
                     ))
                   )}
+                  </div>
                 </>
               ) : (
                 <div className="empty-state">

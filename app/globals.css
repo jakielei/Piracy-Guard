@@ -438,8 +438,23 @@ body {
 }
 
 .review-main {
-  overflow-y: auto;
+  overflow-y: hidden;
   padding-left: 8px;
+  display: flex;
+  flex-direction: column;
+}
+
+.review-main-header {
+  flex-shrink: 0;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-primary);
+}
+
+.review-main-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding-top: 12px;
 }
 
 /* ===== Stats Grid ===== */
