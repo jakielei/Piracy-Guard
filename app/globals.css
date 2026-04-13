@@ -558,6 +558,57 @@ body {
   color: var(--text-secondary);
 }
 
+/* ===== Filter Tabs ===== */
+.filter-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filter-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: inherit;
+  border: 1px solid var(--border-color);
+  background: var(--bg-input);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.filter-tab:hover {
+  border-color: rgba(59, 130, 246, 0.4);
+  color: var(--text-primary);
+  background: var(--bg-card-hover);
+}
+
+.filter-tab.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.filter-tab .filter-count {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 1px 8px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  min-width: 20px;
+  text-align: center;
+}
+
+.filter-tab.active .filter-count {
+  background: rgba(59, 130, 246, 0.25);
+}
+
 /* ===== Animations ===== */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(8px); }

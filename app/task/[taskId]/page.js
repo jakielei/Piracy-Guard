@@ -35,6 +35,7 @@ export default function TaskPage() {
   const [dramas, setDramas] = useState([]);
   const [selectedDrama, setSelectedDrama] = useState(null);
   const [searchResults, setSearchResults] = useState([]);
+  const [resultFilter, setResultFilter] = useState('all');
   const [logs, setLogs] = useState([]);
   const [operatorName, setOperatorName] = useState('');
   const [piratedCount, setPiratedCount] = useState(0);
@@ -83,6 +84,12 @@ export default function TaskPage() {
 
       if (['drama_completed', 'drama_skipped', 'drama_error', 'task_completed', 'task_paused', 'task_cancelled', 'task_resumed'].includes(data.type)) {
         fetchTask();
+        if (data.type === 'task_paused') {
+          setTaskStarted(false);
+        }
+        if (data.type === 'task_resumed') {
+          setTaskStarted(true);
+        }
         if (data.type === 'task_completed' || data.type === 'task_cancelled') {
           es.close();
           setTaskStarted(false);
@@ -218,11 +225,30 @@ export default function TaskPage() {
     }, 3000);
   }
 
+  // Categorize results by domain
+  const SOCIAL_DOMAINS = ['youtube.com', 'facebook.com', 'tiktok.com', 'x.com', 'twitter.com'];
+  
+  function categorizeResult(result) {
+    const domain = (result.domain || '').toLowerCase();
+    if (domain.includes('dailymotion.com')) return 'dailymotion';
+    if (SOCIAL_DOMAINS.some(d => domain.includes(d))) return 'social';
+    return 'other';
+  }
+
+  const filteredResults = resultFilter === 'all'
+    ? searchResults
+    : searchResults.filter(r => categorizeResult(r) === resultFilter);
+
+  const dailymotionCount = searchResults.filter(r => categorizeResult(r) === 'dailymotion').length;
+  const socialCount = searchResults.filter(r => categorizeResult(r) === 'social').length;
+  const otherCount = searchResults.filter(r => categorizeResult(r) === 'other').length;
+
   async function handleSelectDrama(drama) {
     if (mainScrollRef.current) {
       mainScrollRef.current.scrollTop = 0;
     }
     setSelectedDrama(drama);
+    setResultFilter('all');
     if (drama.status === 'completed') {
       try {
         const res = await fetch(`/api/dramas/${drama.id}/results`);
@@ -472,13 +498,43 @@ export default function TaskPage() {
                     </p>
                   </div>
 
-                  {searchResults.length === 0 ? (
+                  {/* Filter Tabs */}
+                  {searchResults.length > 0 && (
+                    <div className="filter-tabs" style={{ marginBottom: 16 }}>
+                      <button
+                        className={`filter-tab ${resultFilter === 'all' ? 'active' : ''}`}
+                        onClick={() => setResultFilter('all')}
+                      >
+                        全部 <span className="filter-count">{searchResults.length}</span>
+                      </button>
+                      <button
+                        className={`filter-tab ${resultFilter === 'dailymotion' ? 'active' : ''}`}
+                        onClick={() => setResultFilter('dailymotion')}
+                      >
+                        🎬 Dailymotion <span className="filter-count">{dailymotionCount}</span>
+                      </button>
+                      <button
+                        className={`filter-tab ${resultFilter === 'social' ? 'active' : ''}`}
+                        onClick={() => setResultFilter('social')}
+                      >
+                        📱 四大社媒 <span className="filter-count">{socialCount}</span>
+                      </button>
+                      <button
+                        className={`filter-tab ${resultFilter === 'other' ? 'active' : ''}`}
+                        onClick={() => setResultFilter('other')}
+                      >
+                        🌐 其他 <span className="filter-count">{otherCount}</span>
+                      </button>
+                    </div>
+                  )}
+
+                  {filteredResults.length === 0 ? (
                     <div className="empty-state">
                       <div className="empty-icon">🔍</div>
-                      <h3>暂无搜索结果</h3>
+                      <h3>{searchResults.length === 0 ? '暂无搜索结果' : '该分类下无结果'}</h3>
                     </div>
                   ) : (
-                    searchResults.map(result => (
+                    filteredResults.map(result => (
                       <div key={result.id} className={`result-card ${result.is_pirated === 1 ? 'marked-pirated' : ''}`}>
                         <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4}}>
                            <div className="result-title" style={{maxWidth: '85%'}}>{result.title}</div>
