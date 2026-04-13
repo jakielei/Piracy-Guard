@@ -332,11 +332,6 @@ export default function TaskPage() {
           <button className={`btn ${rematchStatus ? 'btn-secondary' : 'btn-warning'} btn-lg`} onClick={handleRematchAll} disabled={!!rematchStatus}>
             {rematchStatus || '🔮 重新判定本任务'}
           </button>
-          {!isRunning && task?.status !== 'pending' && (
-            <button className="btn btn-danger btn-lg" onClick={handleDeleteTask}>
-              🗑️ 删除任务及数据
-            </button>
-          )}
           {canStart && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 12, background: 'rgba(0,0,0,0.1)', padding: '4px 12px', borderRadius: 8 }}>
               <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer', fontSize: 13, userSelect: 'none', color: 'var(--warning)' }}>
@@ -618,8 +613,11 @@ export default function TaskPage() {
             <button className="btn btn-success" onClick={handleExport}>
               📥 导出 Excel
             </button>
-            <button className="btn btn-primary" onClick={() => {
-              if (window.confirm('确定已导出全部数据并要结束本轮任务返回首页吗？')) {
+            <button className="btn btn-primary" onClick={async () => {
+              if (window.confirm('确定已导出全部数据并要结束本轮任务返回首页吗？\n（任务数据将自动清除）')) {
+                try {
+                  await fetch(`/api/tasks/${taskId}`, { method: 'DELETE' });
+                } catch (e) {}
                 router.push('/');
               }
             }}>
