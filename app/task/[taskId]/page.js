@@ -225,10 +225,15 @@ export default function TaskPage() {
     }, 3000);
   }
 
-  // Categorize results by domain
-  const SOCIAL_DOMAINS = ['youtube.com', 'facebook.com', 'tiktok.com', 'x.com', 'twitter.com'];
+  // Categorize results by domain (title-irrelevant results get their own category)
+  const SOCIAL_DOMAINS = ['youtube.com', 'facebook.com', 'instagram.com', 'tiktok.com', 'x.com', 'twitter.com'];
   
+  function isTitleIrrelevant(result) {
+    return result.match_status === 'safe' && result.match_reason && result.match_reason.includes('标题相关度');
+  }
+
   function categorizeResult(result) {
+    if (isTitleIrrelevant(result)) return 'irrelevant';
     const domain = (result.domain || '').toLowerCase();
     if (domain.includes('dailymotion.com')) return 'dailymotion';
     if (SOCIAL_DOMAINS.some(d => domain.includes(d))) return 'social';
@@ -242,6 +247,7 @@ export default function TaskPage() {
   const dailymotionCount = searchResults.filter(r => categorizeResult(r) === 'dailymotion').length;
   const socialCount = searchResults.filter(r => categorizeResult(r) === 'social').length;
   const otherCount = searchResults.filter(r => categorizeResult(r) === 'other').length;
+  const irrelevantCount = searchResults.filter(r => categorizeResult(r) === 'irrelevant').length;
 
   async function handleSelectDrama(drama) {
     if (mainScrollRef.current) {
@@ -511,13 +517,19 @@ export default function TaskPage() {
                           className={`filter-tab ${resultFilter === 'social' ? 'active' : ''}`}
                           onClick={() => setResultFilter('social')}
                         >
-                          📱 四大社媒 <span className="filter-count">{socialCount}</span>
+                          📱 五大社媒 <span className="filter-count">{socialCount}</span>
                         </button>
                         <button
                           className={`filter-tab ${resultFilter === 'other' ? 'active' : ''}`}
                           onClick={() => setResultFilter('other')}
                         >
                           🌐 其他 <span className="filter-count">{otherCount}</span>
+                        </button>
+                        <button
+                          className={`filter-tab ${resultFilter === 'irrelevant' ? 'active' : ''}`}
+                          onClick={() => setResultFilter('irrelevant')}
+                        >
+                          🚫 标题无关 <span className="filter-count">{irrelevantCount}</span>
                         </button>
                       </div>
                     )}
