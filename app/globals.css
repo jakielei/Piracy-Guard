@@ -884,26 +884,69 @@ body {
   opacity: 1;
 }
 
-/* ===== Cache Management ===== */
-.cache-section {
-  margin-top: 32px;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius);
-  padding: 20px 24px;
+/* ===== Cache Footer ===== */
+.cache-footer {
+  margin-top: 48px;
+}
+
+.cache-footer-divider {
+  height: 1px;
+  background: var(--border-color);
+  margin-bottom: 16px;
+}
+
+.cache-footer-content {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
+  gap: 10px;
+  padding: 0 4px;
 }
 
-.cache-info h3 {
-  font-size: 15px;
-  font-weight: 600;
-  margin-bottom: 4px;
-}
-
-.cache-info p {
-  font-size: 13px;
+.cache-footer-label {
+  font-size: 12px;
   color: var(--text-muted);
+  font-weight: 500;
+}
+
+.cache-footer-size {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.cache-footer-size.warn {
+  color: var(--warning);
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.cache-footer-btn {
+  font-size: 12px;
+  color: var(--text-muted);
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  padding: 2px 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cache-footer-btn:hover {
+  color: var(--accent);
+  border-color: var(--border-color);
+  background: rgba(59, 130, 246, 0.05);
+}
+
+.cache-footer-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cache-footer-hint {
+  font-size: 11px;
+  color: var(--text-muted);
+  opacity: 0.5;
+  margin-left: auto;
 }

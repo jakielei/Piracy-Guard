@@ -312,25 +312,24 @@ export default function TasksPage() {
         </div>
       )}
 
-      {/* Cache Management */}
-      <div className="cache-section">
-        <div className="cache-info">
-          <h3>🗂️ 浏览器缓存管理</h3>
-          <p>清理自动化浏览器产生的缓存文件，不会影响 Google 登录态</p>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+      {/* Cache footer */}
+      <div className="cache-footer">
+        <div className="cache-footer-divider" />
+        <div className="cache-footer-content">
+          <span className="cache-footer-label">🗂️ 浏览器缓存</span>
           {cacheSize !== null && (
-            <span style={{ fontSize: 14, color: 'var(--text-secondary)' }}>
-              当前占用：<strong style={{ color: cacheSize.totalMB > 500 ? 'var(--warning)' : 'var(--text-primary)' }}>{cacheSize.totalFormatted}</strong>
+            <span className={`cache-footer-size ${cacheSize.totalMB > 500 ? 'warn' : ''}`}>
+              {cacheSize.totalFormatted}
             </span>
           )}
           <button
-            className="btn btn-warning btn-sm"
+            className="cache-footer-btn"
             disabled={clearing}
             onClick={handleClearCache}
           >
-            {clearing ? '清理中...' : '🧹 清理缓存'}
+            {clearing ? '清理中...' : '清理'}
           </button>
+          <span className="cache-footer-hint">不影响登录态</span>
         </div>
       </div>
     </div>
