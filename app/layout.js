@@ -19,6 +19,10 @@ export default function RootLayout({ children }) {
                 <span>短剧盗版检测工具</span>
               </div>
             </Link>
+            <div className="navbar-links">
+              <Link href="/" className="navbar-link">➕ 新建任务</Link>
+              <Link href="/tasks" className="navbar-link">📋 任务管理</Link>
+            </div>
           </nav>
           <main className="main-content">
             {children}

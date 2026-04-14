@@ -188,22 +188,8 @@ export default function TaskPage() {
     }
   }
 
-  async function handleDeleteTask() {
-    if (!confirm('确定要彻底删除该任务的所有数据及其搜罗到的所有结果吗？此操作不可逆！')) return;
-    try {
-      const res = await fetch(`/api/tasks/${taskId}`, { method: 'DELETE' });
-      const data = await res.json();
-      if (data.success) {
-        alert('任务及相关数据极速删除成功！');
-        window.location.href = '/';
-      } else {
-        alert('删除失败: ' + data.error);
-      }
-    } catch (err) {
-      console.error(err);
-      alert('网络异常导致删除失败');
-    }
-  }
+
+
 
   function checkRematchProgress() {
     const timer = setInterval(async () => {
@@ -321,7 +307,7 @@ export default function TaskPage() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8, flexWrap: 'wrap', gap: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <h1 className="page-title" style={{ margin: 0 }}>
-            任务 #{taskId}
+            {task?.name || `任务 #${taskId}`}
           </h1>
           <span className={`badge ${STATUS_BADGE[task.status] || 'badge-pending'}`} style={{ fontSize: 13, verticalAlign: 'middle' }}>
             {task.status === 'running' ? '🔄 运行中' :
@@ -609,12 +595,12 @@ export default function TaskPage() {
 
       {/* Export Section */}
       {dramas.some(d => d.status === 'completed') && (
-        <div className="export-section">
+        <div className="export-section" style={{ flexWrap: 'wrap' }}>
           <div className="export-info">
             <h3>📥 导出检测结果</h3>
             <p>将所有标记为盗版的链接导出为 Excel 文件</p>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
             <input
               className="input"
               style={{ width: 160 }}
@@ -625,15 +611,18 @@ export default function TaskPage() {
             <button className="btn btn-success" onClick={handleExport}>
               📥 导出 Excel
             </button>
-            <button className="btn btn-primary" onClick={async () => {
-              if (window.confirm('确定已导出全部数据并要结束本轮任务返回首页吗？\n（任务数据将自动清除）')) {
+            <button className="btn btn-primary" onClick={() => router.push('/tasks')}>
+              📋 返回任务列表
+            </button>
+            <button className="btn btn-danger btn-sm" onClick={async () => {
+              if (window.confirm('确定要删除该任务及其所有关联数据？此操作不可撤销。')) {
                 try {
                   await fetch(`/api/tasks/${taskId}`, { method: 'DELETE' });
+                  router.push('/tasks');
                 } catch (e) {}
-                router.push('/');
               }
             }}>
-              🏁 完成本轮任务返回首页
+              🗑️ 删除任务
             </button>
           </div>
         </div>
