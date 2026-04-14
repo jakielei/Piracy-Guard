@@ -10,10 +10,13 @@ export default function TasksPage() {
   const [deleting, setDeleting] = useState(null); // taskId being deleted
   const [bulkDeleting, setBulkDeleting] = useState(false);
   const [exporting, setExporting] = useState(null);
+  const [cacheSize, setCacheSize] = useState(null);
+  const [clearing, setClearing] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     fetchTasks();
+    fetchCacheSize();
   }, []);
 
   async function fetchTasks() {
@@ -116,6 +119,35 @@ export default function TasksPage() {
       alert('导出失败: ' + err.message);
     } finally {
       setExporting(null);
+    }
+  }
+
+  async function fetchCacheSize() {
+    try {
+      const res = await fetch('/api/cache/clear');
+      const data = await res.json();
+      setCacheSize(data);
+    } catch (err) {
+      console.error('Failed to fetch cache size:', err);
+    }
+  }
+
+  async function handleClearCache() {
+    if (!confirm('确定要清理浏览器缓存？\n（不会影响 Google 登录态和 Cookies）')) return;
+    setClearing(true);
+    try {
+      const res = await fetch('/api/cache/clear', { method: 'POST' });
+      const data = await res.json();
+      if (data.success) {
+        alert(`✅ ${data.message}`);
+        fetchCacheSize();
+      } else {
+        alert('清理失败: ' + data.error);
+      }
+    } catch (err) {
+      alert('清理失败: ' + err.message);
+    } finally {
+      setClearing(false);
     }
   }
 
@@ -279,6 +311,28 @@ export default function TasksPage() {
           })}
         </div>
       )}
+
+      {/* Cache Management */}
+      <div className="cache-section">
+        <div className="cache-info">
+          <h3>🗂️ 浏览器缓存管理</h3>
+          <p>清理自动化浏览器产生的缓存文件，不会影响 Google 登录态</p>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          {cacheSize !== null && (
+            <span style={{ fontSize: 14, color: 'var(--text-secondary)' }}>
+              当前占用：<strong style={{ color: cacheSize.totalMB > 500 ? 'var(--warning)' : 'var(--text-primary)' }}>{cacheSize.totalFormatted}</strong>
+            </span>
+          )}
+          <button
+            className="btn btn-warning btn-sm"
+            disabled={clearing}
+            onClick={handleClearCache}
+          >
+            {clearing ? '清理中...' : '🧹 清理缓存'}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

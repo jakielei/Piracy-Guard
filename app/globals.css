@@ -884,3 +884,26 @@ body {
   opacity: 1;
 }
 
+/* ===== Cache Management ===== */
+.cache-section {
+  margin-top: 32px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.cache-info h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.cache-info p {
+  font-size: 13px;
+  color: var(--text-muted);
+}
