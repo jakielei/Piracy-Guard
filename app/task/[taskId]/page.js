@@ -226,13 +226,17 @@ export default function TaskPage() {
     return 'other';
   }
 
+  // 'suspicious' is a cross-cutting filter by match_status, independent of domain category
   const filteredResults = resultFilter === 'all'
     ? searchResults
-    : searchResults.filter(r => categorizeResult(r) === resultFilter);
+    : resultFilter === 'suspicious'
+      ? searchResults.filter(r => r.match_status === 'suspicious')
+      : searchResults.filter(r => categorizeResult(r) === resultFilter);
 
   const dailymotionCount = searchResults.filter(r => categorizeResult(r) === 'dailymotion').length;
   const socialCount = searchResults.filter(r => categorizeResult(r) === 'social').length;
   const otherCount = searchResults.filter(r => categorizeResult(r) === 'other').length;
+  const suspiciousCount = searchResults.filter(r => r.match_status === 'suspicious').length;
   const irrelevantCount = searchResults.filter(r => categorizeResult(r) === 'irrelevant').length;
 
   async function handleSelectDrama(drama) {
@@ -489,31 +493,37 @@ export default function TaskPage() {
                       <div className="filter-tabs" style={{ marginTop: 12 }}>
                         <button
                           className={`filter-tab ${resultFilter === 'all' ? 'active' : ''}`}
-                          onClick={() => setResultFilter('all')}
+                          onClick={() => { setResultFilter('all'); if (mainScrollRef.current) mainScrollRef.current.scrollTop = 0; }}
                         >
                           全部 <span className="filter-count">{searchResults.length}</span>
                         </button>
                         <button
                           className={`filter-tab ${resultFilter === 'dailymotion' ? 'active' : ''}`}
-                          onClick={() => setResultFilter('dailymotion')}
+                          onClick={() => { setResultFilter('dailymotion'); if (mainScrollRef.current) mainScrollRef.current.scrollTop = 0; }}
                         >
                           🎬 Dailymotion <span className="filter-count">{dailymotionCount}</span>
                         </button>
                         <button
                           className={`filter-tab ${resultFilter === 'social' ? 'active' : ''}`}
-                          onClick={() => setResultFilter('social')}
+                          onClick={() => { setResultFilter('social'); if (mainScrollRef.current) mainScrollRef.current.scrollTop = 0; }}
                         >
                           📱 五大社媒 <span className="filter-count">{socialCount}</span>
                         </button>
                         <button
+                          className={`filter-tab ${resultFilter === 'suspicious' ? 'active' : ''}`}
+                          onClick={() => { setResultFilter('suspicious'); if (mainScrollRef.current) mainScrollRef.current.scrollTop = 0; }}
+                        >
+                          ⚠️ 疑似盗版 <span className="filter-count">{suspiciousCount}</span>
+                        </button>
+                        <button
                           className={`filter-tab ${resultFilter === 'other' ? 'active' : ''}`}
-                          onClick={() => setResultFilter('other')}
+                          onClick={() => { setResultFilter('other'); if (mainScrollRef.current) mainScrollRef.current.scrollTop = 0; }}
                         >
                           🌐 其他 <span className="filter-count">{otherCount}</span>
                         </button>
                         <button
                           className={`filter-tab ${resultFilter === 'irrelevant' ? 'active' : ''}`}
-                          onClick={() => setResultFilter('irrelevant')}
+                          onClick={() => { setResultFilter('irrelevant'); if (mainScrollRef.current) mainScrollRef.current.scrollTop = 0; }}
                         >
                           🚫 标题无关 <span className="filter-count">{irrelevantCount}</span>
                         </button>
