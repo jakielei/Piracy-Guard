@@ -39,7 +39,7 @@ export async function GET(request, { params }) {
         '盗版平台': capitalize(platformName),
         '剧集id': r.drama_id,
         '剧名': r.name || '',
-        '中文剧名': r.chinese_name || '',
+        '中文剧名': r.chinese_name || r.name || '',
         '剧集CP': r.cp_name || '',
         '侵权链接': r.url,
         '完成人姓名': operatorName,
