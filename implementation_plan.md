@@ -19,7 +19,7 @@
 
 ### 数据库层
 
-#### [NEW] [db.js](file:///Users/henryhsia/Library/CloudStorage/OneDrive-个人/fake%20detector/lib/db.js)
+#### [NEW] [db.js](file:///Users/henryhsia/PiracyGuard/lib/db.js)
 
 SQLite 数据库初始化与操作封装。
 
@@ -77,7 +77,7 @@ CREATE TABLE search_results (
 
 ### Playwright 自动化层
 
-#### [NEW] [automation/backend-query.js](file:///Users/henryhsia/Library/CloudStorage/OneDrive-个人/fake%20detector/lib/automation/backend-query.js)
+#### [NEW] [automation/backend-query.js](file:///Users/henryhsia/PiracyGuard/lib/automation/backend-query.js)
 
 后台系统查询自动化。
 
@@ -94,7 +94,7 @@ CREATE TABLE search_results (
 - 用户数据目录存放在项目内 `./browser-data/` 文件夹
 - 提供登录检测 → 若未登录则暂停提示用户
 
-#### [NEW] [automation/google-search.js](file:///Users/henryhsia/Library/CloudStorage/OneDrive-个人/fake%20detector/lib/automation/google-search.js)
+#### [NEW] [automation/google-search.js](file:///Users/henryhsia/PiracyGuard/lib/automation/google-search.js)
 
 Google 搜索自动化。
 
@@ -109,7 +109,7 @@ Google 搜索自动化。
 - 真实浏览器指纹（Playwright chromium persistent context）
 - 验证码检测 → 暂停任务，发事件通知前端
 
-#### [NEW] [automation/manager.js](file:///Users/henryhsia/Library/CloudStorage/OneDrive-个人/fake%20detector/lib/automation/manager.js)
+#### [NEW] [automation/manager.js](file:///Users/henryhsia/PiracyGuard/lib/automation/manager.js)
 
 任务执行管理器。
 
@@ -122,32 +122,32 @@ Google 搜索自动化。
 
 ### 后端 API Routes
 
-#### [NEW] [route.js](file:///Users/henryhsia/Library/CloudStorage/OneDrive-个人/fake%20detector/app/api/tasks/route.js)
+#### [NEW] [route.js](file:///Users/henryhsia/PiracyGuard/app/api/tasks/route.js)
 
 - `POST /api/tasks` — 创建新任务（接收粘贴文本，解析 ID，入库）
 - `GET /api/tasks` — 获取所有任务列表
 
-#### [NEW] [route.js](file:///Users/henryhsia/Library/CloudStorage/OneDrive-个人/fake%20detector/app/api/tasks/[taskId]/route.js)
+#### [NEW] [route.js](file:///Users/henryhsia/PiracyGuard/app/api/tasks/[taskId]/route.js)
 
 - `GET /api/tasks/:taskId` — 获取任务详情及短剧列表
 
-#### [NEW] [route.js](file:///Users/henryhsia/Library/CloudStorage/OneDrive-个人/fake%20detector/app/api/tasks/[taskId]/start/route.js)
+#### [NEW] [route.js](file:///Users/henryhsia/PiracyGuard/app/api/tasks/[taskId]/start/route.js)
 
 - `POST /api/tasks/:taskId/start` — 启动任务执行
 
-#### [NEW] [route.js](file:///Users/henryhsia/Library/CloudStorage/OneDrive-个人/fake%20detector/app/api/tasks/[taskId]/progress/route.js)
+#### [NEW] [route.js](file:///Users/henryhsia/PiracyGuard/app/api/tasks/[taskId]/progress/route.js)
 
 - `GET /api/tasks/:taskId/progress` — SSE 进度流
 
-#### [NEW] [route.js](file:///Users/henryhsia/Library/CloudStorage/OneDrive-个人/fake%20detector/app/api/dramas/[dramaId]/results/route.js)
+#### [NEW] [route.js](file:///Users/henryhsia/PiracyGuard/app/api/dramas/[dramaId]/results/route.js)
 
 - `GET /api/dramas/:dramaId/results` — 获取某短剧的搜索结果
 
-#### [NEW] [route.js](file:///Users/henryhsia/Library/CloudStorage/OneDrive-个人/fake%20detector/app/api/results/[resultId]/mark/route.js)
+#### [NEW] [route.js](file:///Users/henryhsia/PiracyGuard/app/api/results/[resultId]/mark/route.js)
 
 - `PATCH /api/results/:resultId/mark` — 标记/取消盗版标记
 
-#### [NEW] [route.js](file:///Users/henryhsia/Library/CloudStorage/OneDrive-个人/fake%20detector/app/api/tasks/[taskId]/export/route.js)
+#### [NEW] [route.js](file:///Users/henryhsia/PiracyGuard/app/api/tasks/[taskId]/export/route.js)
 
 - `GET /api/tasks/:taskId/export` — 导出 Excel 文件
 
@@ -155,7 +155,7 @@ Google 搜索自动化。
 
 ### 前端页面
 
-#### [NEW] [page.js](file:///Users/henryhsia/Library/CloudStorage/OneDrive-个人/fake%20detector/app/page.js)
+#### [NEW] [page.js](file:///Users/henryhsia/PiracyGuard/app/page.js)
 
 首页 — 新建任务。
 
@@ -163,7 +163,7 @@ Google 搜索自动化。
 - 解析预览（显示提取到的 ID 数量）
 - "开始检测" 按钮
 
-#### [NEW] [page.js](file:///Users/henryhsia/Library/CloudStorage/OneDrive-个人/fake%20detector/app/task/[taskId]/page.js)
+#### [NEW] [page.js](file:///Users/henryhsia/PiracyGuard/app/task/[taskId]/page.js)
 
 任务详情页 — 进度 + 审核 + 导出整合。
 
@@ -175,11 +175,11 @@ Google 搜索自动化。
 > [!NOTE]
 > 为简化 MVP，将进度、审核、导出合并在同一页面，减少页面跳转。用户可以在任务运行中开始审核已完成的短剧。
 
-#### [NEW] [layout.js](file:///Users/henryhsia/Library/CloudStorage/OneDrive-个人/fake%20detector/app/layout.js)
+#### [NEW] [layout.js](file:///Users/henryhsia/PiracyGuard/app/layout.js)
 
 全局布局 — 简洁的导航栏 + 页面容器。
 
-#### [NEW] [globals.css](file:///Users/henryhsia/Library/CloudStorage/OneDrive-个人/fake%20detector/app/globals.css)
+#### [NEW] [globals.css](file:///Users/henryhsia/PiracyGuard/app/globals.css)
 
 全局样式 — 暗色主题 + 现代设计系统。
 
